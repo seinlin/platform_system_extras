@@ -30,11 +30,11 @@ FileNode::FileNode(std::string name, std::string node_path,
                    std::vector<RequestGroup> req_sorted,
                    std::size_t default_val_index, bool reset_on_init,
                    bool hold_fd)
-    : Node(name, node_path, std::move(req_sorted), default_val_index,
-           reset_on_init),
+    : Node(std::move(name), std::move(node_path), std::move(req_sorted),
+           default_val_index, reset_on_init),
       hold_fd_(hold_fd) {
     if (reset_on_init) {
-        Update();
+        Update(false);
     }
 }
 
@@ -52,7 +52,8 @@ std::chrono::milliseconds FileNode::Update(bool log_error) {
 
     // Update node only if request index changes
     if (value_index != current_val_index_) {
-        const std::string& req_value = req_sorted_[value_index].GetRequestValue();
+        const std::string& req_value =
+            req_sorted_[value_index].GetRequestValue();
 
         fd_.reset(TEMP_FAILURE_RETRY(
             open(node_path_.c_str(), O_WRONLY | O_CLOEXEC | O_TRUNC)));

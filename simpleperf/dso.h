@@ -22,8 +22,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <android-base/file.h>
 #include <android-base/logging.h>
-#include <android-base/test_utils.h>
 
 #include "build_id.h"
 #include "read_elf.h"
@@ -40,6 +40,8 @@ class DebugElfFileFinder {
   void SetVdsoFile(const std::string& vdso_file, bool is_64bit);
   std::string FindDebugFile(const std::string& dso_path, bool force_64bit,
                             BuildId& build_id);
+  // Only for testing
+  std::string GetPathInSymFsDir(const std::string& path);
 
  private:
   void CollectBuildIdInDir(const std::string& dir);

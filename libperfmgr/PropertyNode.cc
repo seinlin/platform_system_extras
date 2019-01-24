@@ -30,10 +30,10 @@ namespace perfmgr {
 PropertyNode::PropertyNode(std::string name, std::string node_path,
                            std::vector<RequestGroup> req_sorted,
                            std::size_t default_val_index, bool reset_on_init)
-    : Node(name, node_path, std::move(req_sorted), default_val_index,
-           reset_on_init) {
+    : Node(std::move(name), std::move(node_path), std::move(req_sorted),
+           default_val_index, reset_on_init) {
     if (reset_on_init) {
-        Update();
+        Update(false);
     }
 }
 
@@ -51,7 +51,8 @@ std::chrono::milliseconds PropertyNode::Update(bool) {
 
     // Update node only if request index changes
     if (value_index != current_val_index_) {
-        const std::string& req_value = req_sorted_[value_index].GetRequestValue();
+        const std::string& req_value =
+            req_sorted_[value_index].GetRequestValue();
 
         if (!android::base::SetProperty(node_path_, req_value)) {
             LOG(WARNING) << "Failed to set property to : " << node_path_
