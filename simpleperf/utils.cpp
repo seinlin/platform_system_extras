@@ -32,6 +32,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/stringprintf.h>
+#include <build/version.h>
 
 #include <7zCrc.h>
 #include <Xz.h>
@@ -46,7 +47,7 @@ void OneTimeFreeAllocator::Clear() {
   end_ = nullptr;
 }
 
-const char* OneTimeFreeAllocator::AllocateString(const std::string& s) {
+const char* OneTimeFreeAllocator::AllocateString(std::string_view s) {
   size_t size = s.size() + 1;
   if (cur_ + size > end_) {
     size_t alloc_size = std::max(size, unit_size_);
@@ -55,7 +56,7 @@ const char* OneTimeFreeAllocator::AllocateString(const std::string& s) {
     cur_ = p;
     end_ = p + alloc_size;
   }
-  strcpy(cur_, s.c_str());
+  strcpy(cur_, s.data());
   const char* result = cur_;
   cur_ += size;
   return result;
@@ -407,5 +408,6 @@ timeval SecondToTimeval(double time_in_sec) {
 constexpr int SIMPLEPERF_VERSION = 1;
 
 std::string GetSimpleperfVersion() {
-  return android::base::StringPrintf("%d.%s", SIMPLEPERF_VERSION, SIMPLEPERF_REVISION);
+  return android::base::StringPrintf("%d.build.%s", SIMPLEPERF_VERSION,
+                                     android::build::GetBuildNumber().c_str());
 }

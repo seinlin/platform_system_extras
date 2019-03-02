@@ -87,10 +87,10 @@ int fscrypt_set_directory_policy(const char* dir)
         "vendor_ce", "vendor_de",
         "media",
         "data", "user", "user_de",
-        "apex",
+        "apex", "preloads", "staging",
     };
     std::string prefix = "/data/";
-    for (auto d: directories_to_exclude) {
+    for (const auto& d: directories_to_exclude) {
         if ((prefix + d) == dir) {
             LOG(INFO) << "Not setting policy on " << dir;
             return 0;
